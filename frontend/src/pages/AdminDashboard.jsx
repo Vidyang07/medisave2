@@ -540,9 +540,9 @@ export default function AdminDashboard() {
                 Member Dashboard
               </Button>
             </Link>
-            <Link to="/buy" className="flex-1 sm:flex-none">
+            <Link to="/partner" className="flex-1 sm:flex-none">
               <Button variant="outline" size="md" className="w-full">
-                Public Catalogue
+                Partner Portal
               </Button>
             </Link>
           </div>

@@ -35,7 +35,7 @@ export default function Navbar() {
   const handleNavSearch = (e) => {
     e.preventDefault();
     if (navSearch.trim()) {
-      navigate(`/buy?search=${encodeURIComponent(navSearch.trim())}`);
+      navigate(`/partner?search=${encodeURIComponent(navSearch.trim())}`);
       setNavSearch("");
       setIsMobileMenuOpen(false);
     }
@@ -77,15 +77,12 @@ export default function Navbar() {
               <NavLink to="/" className={navLinkClass}>
                 Home
               </NavLink>
-              <NavLink to="/buy" className={navLinkClass}>
-                Browse Donations
-              </NavLink>
               <NavLink to="/sell" className={navLinkClass}>
                 Donate Medicine
               </NavLink>
               {isAuthenticated && (
                 <NavLink to="/dashboard" className={navLinkClass}>
-                  My Cabinet
+                  Donor Dashboard
                 </NavLink>
               )}
               {isAuthenticated && (user?.role === "partner" || user?.role === "admin") && (
@@ -100,7 +97,7 @@ export default function Navbar() {
                   }
                 >
                   <PackageIcon className="w-3.5 h-3.5 text-brand" />
-                  Partner Portal
+                  NGO / Partner Portal
                 </NavLink>
               )}
               {isAuthenticated && user?.role === "admin" && (
@@ -299,13 +296,6 @@ export default function Navbar() {
               Home
             </Link>
             <Link
-              to="/buy"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="px-3 py-2 rounded-lg text-xs font-medium text-ink hover:bg-brand-tint hover:text-brand transition"
-            >
-              Browse Donations
-            </Link>
-            <Link
               to="/sell"
               onClick={() => setIsMobileMenuOpen(false)}
               className="px-3 py-2 rounded-lg text-xs font-medium text-ink hover:bg-brand-tint hover:text-brand transition"
@@ -318,7 +308,7 @@ export default function Navbar() {
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="px-3 py-2 rounded-lg text-xs font-medium text-ink hover:bg-brand-tint hover:text-brand transition"
               >
-                My Cabinet
+                Donor Dashboard
               </Link>
             )}
             <Link
@@ -335,7 +325,7 @@ export default function Navbar() {
                 className="px-3 py-2 rounded-lg text-xs font-bold text-success bg-success-tint transition flex items-center gap-1.5"
               >
                 <PackageIcon className="w-3.5 h-3.5 text-brand" />
-                Partner Portal
+                NGO / Partner Portal
               </Link>
             )}
             {user?.role === "admin" && (

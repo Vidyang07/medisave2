@@ -305,13 +305,18 @@ export const getMyListings = async (req, res) => {
 // @access  Private (Verified Partner or Admin)
 export const getPartnerAvailableDonations = async (req, res) => {
   try {
-    const { search, category, locality, sort = "nearby" } = req.query;
+    const { search, category, locality, sort = "nearby", status } = req.query;
     const partnerLocality = req.user.locality || "Katraj";
 
     const query = {
-      status: "approved",
       acceptedBy: null,
     };
+
+    if (status && status !== "All" && status !== "all") {
+      query.status = status;
+    } else {
+      query.status = { $in: ["approved", "pending"] };
+    }
 
     if (category && category !== "All Categories" && category !== "All") {
       query.category = category;
@@ -335,7 +340,7 @@ export const getPartnerAvailableDonations = async (req, res) => {
     }
 
     const medicines = await Medicine.find(query)
-      .populate("seller", "name locality isVerified avatar")
+      .populate("seller", "name phone email locality address isVerified avatar")
       .sort({ expiryDate: 1, createdAt: -1 });
 
     const enriched = medicines.map((med) => {
@@ -399,18 +404,10 @@ export const acceptDonationByPartner = async (req, res) => {
       });
     }
 
-    if (medicine.status !== "approved" || medicine.acceptedBy) {
+    if (!["approved", "pending"].includes(medicine.status) || medicine.acceptedBy) {
       return res.status(400).json({
         success: false,
         message: `This donation is no longer available for acceptance (Status: ${medicine.status})`,
-      });
-    }
-
-    // Prevent self-dealing if donor is also a partner
-    if (medicine.seller.toString() === req.user._id.toString()) {
-      return res.status(400).json({
-        success: false,
-        message: "You cannot accept your own donation listing",
       });
     }
 
@@ -427,7 +424,7 @@ export const acceptDonationByPartner = async (req, res) => {
     await medicine.save();
 
     const populated = await Medicine.findById(medicine._id)
-      .populate("seller", "name phone locality isVerified avatar")
+      .populate("seller", "name phone email locality address isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
@@ -589,7 +586,7 @@ export const verifyDonationHandover = async (req, res) => {
     await medicine.save();
 
     const populated = await Medicine.findById(medicine._id)
-      .populate("seller", "name phone locality isVerified avatar")
+      .populate("seller", "name phone email locality address isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({
@@ -621,7 +618,7 @@ export const getPartnerAcceptedDonations = async (req, res) => {
 
     const medicines = await Medicine.find(query)
       .sort({ acceptedAt: -1, createdAt: -1 })
-      .populate("seller", "name phone locality isVerified avatar")
+      .populate("seller", "name phone email locality address isVerified avatar")
       .populate("acceptedBy", "name organizationName organizationType locality phone email");
 
     return res.status(200).json({

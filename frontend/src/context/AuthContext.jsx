@@ -104,6 +104,10 @@ export function AuthProvider({ children }) {
         password: formData.password,
         phone: formData.phone,
         address: formData.address,
+        role: formData.role || "user",
+        organizationName: formData.organizationName || "",
+        organizationType: formData.organizationType || "",
+        locality: formData.locality || "Katraj",
       });
 
       if (res.data?.success && res.data?.data) {

@@ -29,7 +29,7 @@ export default function Footer() {
           <nav className="space-y-2.5 text-sm" aria-label="Platform">
             <h4 className="eyebrow !text-ink-subtle">Platform</h4>
             <ul className="space-y-2">
-              <li><Link to="/buy" className={linkCls}>Browse Donations</Link></li>
+              <li><Link to="/ngo-requests" className={linkCls}>Community NGO Requests</Link></li>
               <li><Link to="/sell" className={linkCls}>Donate Medicine</Link></li>
               <li><Link to="/dashboard" className={linkCls}>My Cabinet</Link></li>
               <li><Link to="/partner" className={linkCls}>Partner Portal</Link></li>

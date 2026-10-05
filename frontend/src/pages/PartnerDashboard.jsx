@@ -35,6 +35,9 @@ export default function PartnerDashboard() {
   const [selectedForAccept, setSelectedForAccept] = useState(null);
   const [isAccepting, setIsAccepting] = useState(false);
 
+  // Contact Donor Modal
+  const [contactingMed, setContactingMed] = useState(null);
+
   // Verify Handover Modal
   const [verifyingMed, setVerifyingMed] = useState(null);
   const [handoverCodeInput, setHandoverCodeInput] = useState("");
@@ -440,25 +443,32 @@ export default function PartnerDashboard() {
                             <MapPinIcon className="w-3.5 h-3.5 text-brand" />
                             {med.locality || "Pune"} ({med.pinCode || "411046"})
                           </div>
+                          <div className="text-[11px] text-ink-muted">
+                            <strong>Donor:</strong> {med.seller?.name || "Community Member"} · <strong>Landmark:</strong> {med.handoverPoint || "Community landmark"}
+                          </div>
                           {dist !== undefined && dist !== null && (
                             <p className="text-[11px] text-ink-subtle italic">
                               Approx. straight-line distance: ~{dist.toFixed(1)} km from your center
                             </p>
                           )}
-                          <p className="text-[11px] text-ink-muted">
-                            <strong>Handover point:</strong> {med.handoverPoint || "Community landmark"}
-                          </p>
                         </div>
                       </div>
 
-                      {/* Action Button */}
-                      <div className="pt-4 border-t border-line mt-4">
+                      {/* Action Buttons: 1) Contact Donor  2) Approve & Accept */}
+                      <div className="pt-4 border-t border-line mt-4 grid grid-cols-2 gap-2">
+                        <Button
+                          variant="outline"
+                          className="justify-center text-xs py-2 text-ink-muted hover:text-ink hover:bg-surface-alt font-semibold"
+                          onClick={() => setContactingMed(med)}
+                        >
+                          📞 Contact Donor
+                        </Button>
                         <Button
                           variant="primary"
-                          className="w-full justify-center text-xs py-2 bg-brand hover:bg-brand-strong"
+                          className="justify-center text-xs py-2 bg-brand hover:bg-brand-strong font-bold shadow-2xs"
                           onClick={() => setSelectedForAccept(med)}
                         >
-                          🤝 Accept Donation for Redistribution
+                          ✅ Approve & Accept
                         </Button>
                       </div>
                     </div>
@@ -475,9 +485,9 @@ export default function PartnerDashboard() {
             <div className="bg-warning-tint p-4 rounded-xl border border-warning-tint text-xs text-warning flex items-start gap-3 shadow-2xs">
               <ClockIcon className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div>
-                <p className="font-bold text-sm text-warning">Physical Medicine Handover Verification Instructions</p>
+                <p className="font-bold text-sm text-warning">Physical Medicine Handover & OTP Verification Instructions</p>
                 <p className="mt-1 text-warning">
-                  These medicine donations have been assigned to your organization. During physical handover with the donor, inspect packaging integrity and ask the donor for their <strong>6-digit secure handover code</strong> shown in their member dashboard. Enter and verify the code below to complete redistribution.
+                  These donations have been claimed by your organization. <strong>1)</strong> Contact the donor via phone to coordinate meetup at the designated landmark. <strong>2)</strong> Inspect medicine packaging integrity upon meetup. <strong>3)</strong> Ask the donor for their <strong>6-digit secure handover OTP</strong> from their Donor Dashboard. <strong>4)</strong> Enter the OTP below to complete the donation and remove the entry.
                 </p>
               </div>
             </div>
@@ -493,7 +503,7 @@ export default function PartnerDashboard() {
                 icon={ClockIcon}
                 title="No Active Handovers"
                 description="You have not accepted any pending donations yet. Switch to 'Available Community Donations' to review and accept medicines."
-                actionLabel="Browse Available Donations"
+                actionLabel="View Available Donations"
                 onAction={() => setActiveTab("available")}
               />
             ) : (
@@ -501,12 +511,12 @@ export default function PartnerDashboard() {
                 {activeHandovers.map((med) => (
                   <div
                     key={med._id}
-                    className="bg-white rounded-xl border border-line p-5 shadow-2xs flex flex-col md:flex-row md:items-center justify-between gap-5"
+                    className="bg-white rounded-xl border border-line p-5 shadow-2xs flex flex-col lg:flex-row lg:items-center justify-between gap-5"
                   >
-                    <div className="space-y-2">
+                    <div className="space-y-3 flex-1">
                       <div className="flex items-center gap-2">
                         <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-warning-tint text-warning uppercase tracking-wider">
-                          Awaiting Physical Handover
+                          Awaiting Physical Handover & OTP
                         </span>
                         {getExpiryBadge(med.expiryDate)}
                       </div>
@@ -515,16 +525,37 @@ export default function PartnerDashboard() {
                         {med.medicineName} ({med.quantity} {med.unit || "units"})
                       </h3>
 
-                      <div className="text-xs text-ink-muted space-y-1">
-                        <p>
-                          <strong>Manufacturer:</strong> {med.company} · <strong>Batch:</strong> {med.batchNumber || "Verified"}
-                        </p>
-                        <p>
-                          <strong>Donor Name:</strong> {med.seller?.name || "Community Donor"} ({med.seller?.phone || "Contact upon handover"})
-                        </p>
-                        <p>
-                          <strong>Handover Point:</strong> {med.handoverPoint || med.locality || "Katraj"}
-                        </p>
+                      {/* Donor Contact & Handover Landmark Box */}
+                      <div className="bg-surface-alt p-3.5 rounded-xl border border-line text-xs space-y-2">
+                        <div className="flex flex-wrap items-center justify-between gap-2 pb-2 border-b border-line">
+                          <div className="flex items-center gap-2">
+                            <span className="font-bold text-ink">👤 Donor:</span>
+                            <span className="font-semibold text-brand">{med.seller?.name || "Community Donor"}</span>
+                          </div>
+                          {med.seller?.phone && (
+                            <a
+                              href={`tel:${med.seller.phone}`}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-brand text-white text-xs font-bold hover:bg-brand-strong transition shadow-2xs"
+                            >
+                              📞 Call {med.seller.phone}
+                            </a>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-ink-muted text-[11px]">
+                          <div>
+                            <strong>Manufacturer:</strong> {med.company} · <strong>Batch:</strong> {med.batchNumber || "Verified"}
+                          </div>
+                          {med.seller?.email && (
+                            <div>
+                              <strong>Email:</strong> {med.seller.email}
+                            </div>
+                          )}
+                          <div className="sm:col-span-2 flex items-center gap-1 text-ink">
+                            <MapPinIcon className="w-3.5 h-3.5 text-brand shrink-0" />
+                            <strong>Designated Handover Landmark:</strong> {med.handoverPoint || `${med.locality || "Katraj"} Public Stop`}
+                          </div>
+                        </div>
                       </div>
 
                       {med.handoverLocked && (
@@ -535,7 +566,20 @@ export default function PartnerDashboard() {
                       )}
                     </div>
 
-                    <div className="flex flex-col sm:flex-row gap-2 shrink-0">
+                    <div className="flex flex-col sm:flex-row lg:flex-col gap-2 shrink-0">
+                      <Button
+                        variant="primary"
+                        className="bg-brand hover:bg-brand-strong text-xs py-2.5 px-4 flex items-center justify-center gap-2 font-bold shadow-xs"
+                        onClick={() => {
+                          setVerifyingMed(med);
+                          setHandoverCodeInput("");
+                          setVerificationError("");
+                        }}
+                        disabled={med.handoverLocked}
+                      >
+                        <CheckIcon className="w-4 h-4" />
+                        Enter 6-Digit Handover OTP
+                      </Button>
                       <Button
                         variant="outline"
                         className="text-xs py-2 px-3 text-danger border-danger-line hover:bg-danger-tint"
@@ -545,19 +589,6 @@ export default function PartnerDashboard() {
                         }}
                       >
                         Cancel / Release
-                      </Button>
-                      <Button
-                        variant="primary"
-                        className="bg-warning hover:bg-warning text-xs py-2 px-4 flex items-center justify-center gap-2"
-                        onClick={() => {
-                          setVerifyingMed(med);
-                          setHandoverCodeInput("");
-                          setVerificationError("");
-                        }}
-                        disabled={med.handoverLocked}
-                      >
-                        <CheckIcon className="w-4 h-4" />
-                        Enter 6-Digit Handover Code
                       </Button>
                     </div>
                   </div>
@@ -625,6 +656,104 @@ export default function PartnerDashboard() {
               </div>
             )}
           </div>
+        )}
+
+        {/* MODAL 0: CONTACT DONOR DETAILS */}
+        {contactingMed && (
+          <Modal
+            isOpen={true}
+            onClose={() => setContactingMed(null)}
+            title="Donor Contact & Handover Details"
+          >
+            <div className="space-y-4 text-xs text-ink">
+              <div className="bg-surface-alt p-4 rounded-xl border border-line space-y-2.5">
+                <div className="flex items-start justify-between gap-2 pb-2 border-b border-line">
+                  <div>
+                    <h4 className="text-sm font-bold text-ink">{contactingMed.medicineName}</h4>
+                    <p className="text-xs text-ink-muted">
+                      {contactingMed.company} · {contactingMed.quantity} {contactingMed.unit || "units"}
+                    </p>
+                  </div>
+                  <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-success-tint text-success">
+                    {contactingMed.category}
+                  </span>
+                </div>
+
+                <div className="space-y-2 pt-1">
+                  <div className="flex justify-between items-center">
+                    <span className="text-ink-muted">👤 Donor Name:</span>
+                    <span className="font-bold text-ink">{contactingMed.seller?.name || "Community Donor"}</span>
+                  </div>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-ink-muted">📞 Phone Number:</span>
+                    {contactingMed.seller?.phone ? (
+                      <a
+                        href={`tel:${contactingMed.seller.phone}`}
+                        className="inline-flex items-center gap-1 font-bold text-brand hover:underline"
+                      >
+                        {contactingMed.seller.phone}
+                      </a>
+                    ) : (
+                      <span className="text-ink-subtle">Shared upon approval</span>
+                    )}
+                  </div>
+
+                  {contactingMed.seller?.email && (
+                    <div className="flex justify-between items-center">
+                      <span className="text-ink-muted">📧 Email Address:</span>
+                      <span className="font-medium text-ink">{contactingMed.seller.email}</span>
+                    </div>
+                  )}
+
+                  <div className="flex justify-between items-start pt-1 border-t border-line">
+                    <span className="text-ink-muted">📍 Handover Landmark:</span>
+                    <span className="font-semibold text-ink text-right max-w-[220px]">
+                      {contactingMed.handoverPoint || `${contactingMed.locality || "Katraj"}, Pune`}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {contactingMed.seller?.phone && (
+                <div className="text-center pt-1">
+                  <a
+                    href={`tel:${contactingMed.seller.phone}`}
+                    className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-success text-white font-bold text-xs hover:bg-success-strong transition shadow-sm"
+                  >
+                    📞 Direct Call to Donor ({contactingMed.seller.phone})
+                  </a>
+                </div>
+              )}
+
+              <div className="bg-brand-tint p-3 rounded-lg border border-success-line text-brand">
+                <p className="font-bold">Next Steps:</p>
+                <p className="mt-0.5 text-[11px]">
+                  Contact the donor to confirm medicine availability. When ready, click <strong>"Approve & Accept Donation"</strong> to claim this medicine and generate the donor's 6-digit verification OTP.
+                </p>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-line">
+                <Button
+                  variant="outline"
+                  onClick={() => setContactingMed(null)}
+                >
+                  Close
+                </Button>
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    const target = contactingMed;
+                    setContactingMed(null);
+                    setSelectedForAccept(target);
+                  }}
+                  className="bg-brand hover:bg-brand-strong font-bold"
+                >
+                  ✅ Approve & Accept Donation
+                </Button>
+              </div>
+            </div>
+          </Modal>
         )}
 
         {/* MODAL 1: ACCEPT DONATION CONFIRMATION */}

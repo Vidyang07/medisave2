@@ -48,7 +48,7 @@ export const protect = async (req, res, next) => {
   }
 };
 
-// Middleware to enforce Verified Partner access (or Admin override)
+// Middleware to enforce Partner access (or Admin override)
 export const verifiedPartnerOnly = (req, res, next) => {
   if (!req.user) {
     return res.status(401).json({
@@ -66,18 +66,15 @@ export const verifiedPartnerOnly = (req, res, next) => {
   if (req.user.role !== "partner") {
     return res.status(403).json({
       success: false,
-      message: "Access forbidden: Verified Partner credentials required",
+      message: "Access forbidden: Partner credentials required",
     });
   }
 
-  // Check if partner is verified
-  if (req.user.partnerStatus !== "verified") {
+  // Check if partner was rejected
+  if (req.user.partnerStatus === "rejected") {
     return res.status(403).json({
       success: false,
-      message:
-        req.user.partnerStatus === "rejected"
-          ? "Partner access rejected by administrator"
-          : "Partner account is pending administrative verification. Please wait for approval.",
+      message: "Partner access rejected by administrator",
     });
   }
 
@@ -92,12 +89,12 @@ export const partnerOrAdminOnly = (req, res, next) => {
     });
   }
 
-  if (req.user.role === "admin" || (req.user.role === "partner" && req.user.partnerStatus === "verified")) {
+  if (req.user.role === "admin" || (req.user.role === "partner" && req.user.partnerStatus !== "rejected")) {
     return next();
   }
 
   return res.status(403).json({
     success: false,
-    message: "Access forbidden: Verified Partner or Admin required",
+    message: "Access forbidden: Partner or Admin required",
   });
 };

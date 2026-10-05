@@ -393,10 +393,10 @@ export default function Home() {
             </div>
 
             <Link
-              to="/buy"
+              to="/partner"
               className="inline-flex items-center gap-1.5 text-xs font-bold text-brand hover:text-brand-strong bg-brand-tint hover:bg-[#d5ebe7] px-3.5 py-2 rounded-lg border border-brand-line transition shrink-0"
             >
-              <span>Explore full catalog ({totalCount})</span>
+              <span>Partner Clinic Portal</span>
               <ArrowRightIcon className="w-3.5 h-3.5" />
             </Link>
           </div>

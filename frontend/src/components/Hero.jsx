@@ -42,10 +42,10 @@ export default function Hero() {
                 <ArrowRightIcon className="w-4 h-4" />
               </Link>
               <Link
-                to="/buy"
+                to="/partner"
                 className="inline-flex items-center gap-2 rounded-[10px] border border-line bg-surface px-5 py-3 text-sm font-semibold text-ink hover:bg-sunken transition-colors"
               >
-                Browse Donations
+                NGO Partner Portal
               </Link>
             </div>
 

@@ -253,7 +253,7 @@ export default function SellMedicine() {
           : `#DON-${Math.floor(1000 + Math.random() * 9000)}`;
         setSubmissionReference(refCode);
         setIsSubmittedSuccess(true);
-        showToast("Donation submitted for coordinator review!", "success");
+        showToast("Medicine donation published successfully!", "success");
       } else {
         const msg = res.data?.message || "Failed to submit medicine donation.";
         setServerError(msg);
@@ -279,13 +279,13 @@ export default function SellMedicine() {
 
           <div className="space-y-2">
             <h2 className="text-2xl font-bold text-ink tracking-tight">
-              Donation Submitted for Coordinator Review
+              Medicine Donation Submitted Successfully!
             </h2>
             <p className="text-xs sm:text-sm text-ink-muted leading-relaxed max-w-md mx-auto">
               Thank you for contributing to MEDISAVE. Your medicine donation for{" "}
-              <strong className="text-ink">{formData.brandName || "Medicine"}</strong> has
-              been submitted. Once verified by a platform coordinator, it will become available to verified community partners in{" "}
-              <strong>{formData.locality}</strong>.
+              <strong className="text-ink">{formData.brandName || "Medicine"}</strong> is
+              now listed and available for accredited partner clinics and community health centers in{" "}
+              <strong>{formData.locality}</strong> to claim.
             </p>
           </div>
 
@@ -308,8 +308,8 @@ export default function SellMedicine() {
             </div>
             <div className="flex justify-between items-center">
               <span className="text-ink-subtle">Status:</span>
-              <span className="font-bold text-warning bg-warning-tint px-2 py-0.5 rounded border border-warning-line">
-                Pending Coordinator Review
+              <span className="font-bold text-success bg-success-tint px-2 py-0.5 rounded border border-success-line">
+                Available for NGO Partner Claim
               </span>
             </div>
           </div>
@@ -378,7 +378,7 @@ export default function SellMedicine() {
             Donate unexpired surplus medicine
           </h1>
           <p className="text-xs sm:text-sm text-ink-muted mt-1.5 leading-relaxed">
-            Redirect eligible unexpired medications to verified community health desks, senior care centers, and non-profit partners in Pune. Every donation is 100% free and verified by platform coordinators.
+            Redirect eligible unexpired medications to accredited community health desks, senior care centers, and NGO clinics in Pune. Every donation is 100% free and directly connectable with local verified partners.
           </p>
         </div>
 
@@ -824,7 +824,7 @@ export default function SellMedicine() {
                     className="w-full bg-surface-alt border border-line rounded-lg px-3.5 py-2.5 text-sm text-ink focus:outline-none focus:ring-2 focus:ring-brand focus:bg-white transition"
                   />
                   <span className="text-[11px] text-ink-subtle mt-1 block">
-                    Public landmark where verified coordinators or partners will accept physical handover.
+                    Public landmark where verified NGO clinics or community partners will accept physical handover.
                   </span>
                 </div>
               </div>
@@ -965,7 +965,7 @@ export default function SellMedicine() {
                   className="w-full shadow-sm"
                   isLoading={isSubmitting}
                 >
-                  Submit Medicine Donation for Coordinator Review
+                  Submit Medicine Donation
                 </Button>
                 <p className="text-[11px] text-ink-subtle text-center mt-2">
                   By submitting, you confirm compliance with MEDISAVE Community Verification Guidelines.
@@ -1020,7 +1020,7 @@ export default function SellMedicine() {
                 </div>
                 <div>
                   <strong className="text-ink block">Physical Handover Verification</strong>
-                  Coordinator or partner confirms handover in person using a 6-digit verification code.
+                  Partner clinic contacts you and confirms physical handover using your 6-digit verification code.
                 </div>
               </div>
             </div>

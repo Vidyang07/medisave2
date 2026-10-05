@@ -93,9 +93,9 @@ export default function MedicineDetails() {
           <p className="text-xs text-ink-muted mb-5 leading-relaxed">
             The requested medicine donation may have been fulfilled, expired, or relocated within the community network.
           </p>
-          <Link to="/buy">
+          <Link to="/">
             <Button variant="primary" size="md">
-              Browse Available Donations
+              Return to Home
             </Button>
           </Link>
         </div>
@@ -119,8 +119,7 @@ export default function MedicineDetails() {
         <Breadcrumb
           items={[
             { label: "Home", to: "/" },
-            { label: "Browse Donations", to: "/buy" },
-            { label: medicine.category || "General", to: `/buy?category=${encodeURIComponent(medicine.category || "")}` },
+            { label: "Partner Portal", to: "/partner" },
             { label: title },
           ]}
         />
@@ -283,7 +282,7 @@ export default function MedicineDetails() {
               <div className="pt-4 border-t border-line space-y-3">
                 <div className="flex flex-col sm:flex-row gap-3">
                   <Link
-                    to="/buy"
+                    to="/partner"
                     className="flex-1"
                   >
                     <Button
@@ -291,7 +290,7 @@ export default function MedicineDetails() {
                       size="lg"
                       className="w-full"
                     >
-                      ← Back to Donations
+                      ← Back to Partner Portal
                     </Button>
                   </Link>
                   <Link

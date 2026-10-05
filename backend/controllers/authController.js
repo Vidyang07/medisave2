@@ -59,8 +59,32 @@ export const registerUser = async (req, res) => {
       });
     }
 
-    const assignedRole = ["user", "partner"].includes(role) ? role : "user";
-    const assignedPartnerStatus = assignedRole === "partner" ? "pending" : "none";
+    let assignedRole = "user";
+    let assignedPartnerStatus = "none";
+    let isVerifiedUser = false;
+
+    if (role === "admin") {
+      const expectedAdminKey = process.env.ADMIN_SECURITY_KEY || "MEDISAVE-ADMIN-2026";
+      if (!req.body.adminSecretKey || req.body.adminSecretKey.trim() !== expectedAdminKey) {
+        return res.status(403).json({
+          success: false,
+          message: "Invalid Administrator / Coordinator Security Key",
+        });
+      }
+      assignedRole = "admin";
+      isVerifiedUser = true;
+    } else if (role === "partner") {
+      if (!organizationName || !organizationName.trim()) {
+        return res.status(400).json({
+          success: false,
+          message: "Organization name is required for Partner / NGO registration",
+        });
+      }
+      assignedRole = "partner";
+      assignedPartnerStatus = "pending";
+    } else {
+      assignedRole = "user";
+    }
 
     // Create user
     const user = await User.create({
@@ -71,9 +95,10 @@ export const registerUser = async (req, res) => {
       address: address ? address.trim() : "",
       role: assignedRole,
       organizationName: organizationName ? organizationName.trim() : "",
-      organizationType: organizationType || "",
+      organizationType: organizationType || (assignedRole === "partner" ? "NGO" : ""),
       locality: locality ? locality.trim() : "Katraj",
       partnerStatus: assignedPartnerStatus,
+      isVerified: isVerifiedUser,
       avatar: `https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=200&q=80`,
     });
 

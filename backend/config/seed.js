@@ -300,54 +300,9 @@ export const seedInitialMedicines = async () => {
       console.log("Admin coordinator seeded: admin@medisave.org");
     }
 
-    if (medicineCount === 0) {
-      console.log("Seeding verified pharmaceutical catalog with Pune localities into MongoDB...");
-      const medicinesToInsert = SEED_MEDICINES.map((med) => ({
-        ...med,
-        seller: donor._id,
-      }));
-      await Medicine.insertMany(medicinesToInsert);
-      console.log(`Successfully seeded ${medicinesToInsert.length} verified medicines!`);
-      return;
-    }
-
-    // Backfill any existing medicines that don't have locality or coordinates
-    const unlocalized = await Medicine.find({
-      $or: [
-        { locality: { $exists: false } },
-        { locality: "" },
-        { locationCoordinates: { $exists: false } },
-        { "locationCoordinates.latitude": { $exists: false } },
-      ],
-    });
-
-    if (unlocalized.length > 0) {
-      console.log(`Backfilling Pune locality & handover metadata for ${unlocalized.length} existing medicines...`);
-      const defaultLocs = ["Katraj", "Kothrud", "Hinjewadi", "Baner", "Viman Nagar", "Hadapsar", "Swargate", "Wakad"];
-      
-      for (let i = 0; i < unlocalized.length; i++) {
-        const med = unlocalized[i];
-        const chosenLocName = defaultLocs[i % defaultLocs.length];
-        const locInfo = findLocality(chosenLocName);
-        med.locality = locInfo.name;
-        med.pinCode = locInfo.pinCode;
-        med.handoverPoint = locInfo.defaultHandoverPoint;
-        med.handoverRadiusKm = 5;
-        med.locationCoordinates = locInfo.coordinates;
-        if (!med.suggestedCommunityPrice) {
-          const calc = calculateSuggestedPrice({
-            originalMrp: med.originalMrp || med.price,
-            packageCondition: med.packageCondition,
-            expiryDate: med.expiryDate,
-          });
-          med.suggestedCommunityPrice = calc.suggestedPrice;
-          med.pricingRationale = calc.rationale;
-        }
-        await med.save();
-      }
-      console.log("Completed backfilling locality & handover data.");
-    }
+    // Only ensure administrative / system accounts exist
+    // Do NOT automatically seed dummy medicines; all listings must be genuine submissions by community donors.
   } catch (error) {
-    console.warn("Seeding initial medicines notice:", error.message);
+    console.warn("System account verification notice:", error.message);
   }
 };

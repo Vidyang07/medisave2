@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { Routes, Route, useLocation } from "react-router-dom";
+import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
@@ -9,7 +9,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Signup from "./pages/Signup";
-import BuyMedicine from "./pages/BuyMedicine";
 import SellMedicine from "./pages/SellMedicine";
 import Dashboard from "./pages/Dashboard";
 import Profile from "./pages/Profile";
@@ -52,7 +51,7 @@ export default function App() {
               <Routes>
                 {/* Public Routes */}
                 <Route path="/" element={<Home />} />
-                <Route path="/buy" element={<BuyMedicine />} />
+                <Route path="/buy" element={<Navigate to="/partner" replace />} />
                 <Route path="/medicine/:id" element={<MedicineDetails />} />
                 <Route path="/cep-proofs" element={<CepProofs />} />
                 <Route path="/ngo-requests" element={<NgoRequests />} />
@@ -80,6 +79,14 @@ export default function App() {
                   }
                 />
                 <Route
+                  path="/donor-dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
                   path="/admin"
                   element={
                     <ProtectedRoute adminOnly>
@@ -89,6 +96,14 @@ export default function App() {
                 />
                 <Route
                   path="/partner"
+                  element={
+                    <ProtectedRoute partnerOnly>
+                      <PartnerDashboard />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/ngo-dashboard"
                   element={
                     <ProtectedRoute partnerOnly>
                       <PartnerDashboard />

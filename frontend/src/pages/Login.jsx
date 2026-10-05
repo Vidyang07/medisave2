@@ -40,7 +40,9 @@ export default function Login() {
 
     if (result.success) {
       showToast(`Welcome back, ${result.user?.name}!`, "success");
-      navigate(from, { replace: true });
+      const defaultDest = result.user?.role === "partner" ? "/partner" : "/dashboard";
+      const targetDestination = location.state?.from?.pathname || defaultDest;
+      navigate(targetDestination, { replace: true });
     } else {
       setErrorMessage(result.message || "Invalid credentials. Please try again.");
       showToast(result.message || "Login failed.", "error");
