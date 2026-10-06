@@ -25,7 +25,10 @@ connectDB().then(() => {
 });
 
 app.use(cors());
-app.use(express.json());
+// Increase body size limit to 10MB to support base64-encoded packaging photo uploads
+// Default 100kb limit caused 413 Payload Too Large on the Donate Medicine form
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ limit: "10mb", extended: true }));
 
 app.get("/", (req, res) => {
   res.send("MEDISAVE Backend Running...");
